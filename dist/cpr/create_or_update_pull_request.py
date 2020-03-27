@@ -56,25 +56,30 @@ def create_or_update_pull_request(
     team_reviewers,
     project_name,
     project_column_name,
+    repository,
 ):
+    if repository is None:
+        repository = github_repository
+
+    head_branch = "{}:{}".format(github_repository.split("/")[0], branch)
+
     # Create the pull request
-    github_repo = Github(github_token).get_repo(github_repository)
+    github_repo = Github(github_token).get_repo(repository)
     try:
         pull_request = github_repo.create_pull(
-            title=title, body=body, base=base, head=branch
+            title=title, body=body, base=base, head=head_branch
         )
-        print(f"Created pull request #{pull_request.number} ({branch} => {base})")
+        print(f"Created pull request #{pull_request.number} ({github_repository}:{branch} => {repository}:{base})")
     except GithubException as e:
         if e.status == 422:
             # A pull request exists for this branch and base
-            head_branch = "{}:{}".format(github_repository.split("/")[0], branch)
             # Get the pull request
             pull_request = github_repo.get_pulls(
                 state="open", base=base, head=head_branch
             )[0]
             # Update title and body
             pull_request.as_issue().edit(title=title, body=body)
-            print(f"Updated pull request #{pull_request.number} ({branch} => {base})")
+            print(f"Updated pull request #{pull_request.number} ({github_repository}:{branch} => {repository}:{base})")
         else:
             print(str(e))
             raise

@@ -32,6 +32,8 @@ inputs:
     description: 'The name of the project column under which a card should be created.'
   branch:
     description: 'The pull request branch name.'
+  repository:
+    description: 'The pull request repository when different from git origin and working with forks.'
   base:
     description: 'The pull request base branch.'
   branch-suffix:
@@ -43,5 +45,5 @@ runs:
   using: 'node12'
   main: 'dist/index.js'
 branding:
-  icon: 'git-pull-request'  
+  icon: 'git-pull-request'
   color: 'gray-dark'
