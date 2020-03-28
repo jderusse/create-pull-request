@@ -192,7 +192,7 @@ result = coub.create_or_update_branch(repo, repo_url, commit_message, base, bran
 
 if result["action"] in ["created", "updated"]:
     # The branch was created or updated
-    print(f"Pushing pull request branch to '{repo.full_name}/{branch}'")
+    print(f"Pushing pull request branch to 'origin/{branch}'")
     repo.git.push("--force", repo_url, f"HEAD:refs/heads/{branch}")
 
     # Set the base. It would have been 'None' if not specified as an input
