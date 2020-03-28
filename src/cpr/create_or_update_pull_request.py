@@ -58,13 +58,15 @@ def create_or_update_pull_request(
     project_column_name,
     request_to_parent,
 ):
-    print(f"DEBUG Creating PR with {request_to_parent}")
     if request_to_parent is None:
         request_to_parent = False
     else:
         request_to_parent = request_to_parent.lower() in ['true', '1', 't', 'y', 'yes', 'on']
 
-    print(f"DEBUG Creating PR with {request_to_parent}")
+    if request_to_parent:
+        print(f"DEBUG Creating PR in {github_repository} parent")
+    else:
+        print(f"DEBUG Creating PR in {github_repository}")
     github_repo = head_repo = Github(github_token).get_repo(github_repository)
     if request_to_parent:
         github_repo = github_repo.parent
