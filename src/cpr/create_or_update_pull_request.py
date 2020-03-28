@@ -74,13 +74,13 @@ def create_or_update_pull_request(
             raise ValueError("The repository is not a fork. The parameter request-to-parent should set to false.")
 
     print(f"DEBUG Creating PR with {github_repo.url} - {head_repo.url}")
-    head_branch = f"{head_repo.owner}:{branch}"
+    head_branch = f"{head_repo.owner.name}:{branch}"
     print(f"DEBUG Creating PR for {head_branch}")
     try:
         pull_request = github_repo.create_pull(
             title=title, body=body, base=base, head=head_branch
         )
-        print(f"Created pull request #{pull_request.number} ({head_branch} => {github_repo.owner}:{base})")
+        print(f"Created pull request #{pull_request.number} ({head_branch} => {github_repo.owner.name}:{base})")
     except GithubException as e:
         if e.status == 422:
             # A pull request exists for this branch and base
@@ -90,7 +90,7 @@ def create_or_update_pull_request(
             )[0]
             # Update title and body
             pull_request.as_issue().edit(title=title, body=body)
-            print(f"Updated pull request #{pull_request.number} ({head_branch} => {github_repo.owner}:{base})")
+            print(f"Updated pull request #{pull_request.number} ({head_branch} => {github_repo.owner.name}:{base})")
         else:
             print(str(e))
             raise
