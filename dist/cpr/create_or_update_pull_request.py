@@ -56,20 +56,29 @@ def create_or_update_pull_request(
     team_reviewers,
     project_name,
     project_column_name,
-    repository,
+    request_to_parent,
 ):
-    if repository is None:
-        repository = github_repository
+    print(f"DEBUG Creating PR with {request_to_parent}")
+    if request_to_parent is None:
+        request_to_parent = False
+    else:
+        request_to_parent = request_to_parent.lower() in ['true', '1', 't', 'y', 'yes', 'on']
 
-    head_branch = "{}:{}".format(github_repository.split("/")[0], branch)
+    print(f"DEBUG Creating PR with {request_to_parent}")
+    github_repo = head_repo = Github(github_token).get_repo(github_repository)
+    if request_to_parent:
+        github_repo = github_repo.parent
+        if github_repo is None:
+            raise ValueError("The repository is not a fork. The parameter request-to-parent should set to false.")
 
-    # Create the pull request
-    github_repo = Github(github_token).get_repo(repository)
+    print(f"DEBUG Creating PR with {github_repo.url} - {head_repo.url}")
+    head_branch = f"{head_repo.owner}:{branch}"
+    print(f"DEBUG Creating PR for {head_branch}")
     try:
         pull_request = github_repo.create_pull(
             title=title, body=body, base=base, head=head_branch
         )
-        print(f"Created pull request #{pull_request.number} ({github_repository}:{branch} => {repository}:{base})")
+        print(f"Created pull request #{pull_request.number} ({head_branch} => {github_repo.owner}:{base})")
     except GithubException as e:
         if e.status == 422:
             # A pull request exists for this branch and base
@@ -79,7 +88,7 @@ def create_or_update_pull_request(
             )[0]
             # Update title and body
             pull_request.as_issue().edit(title=title, body=body)
-            print(f"Updated pull request #{pull_request.number} ({github_repository}:{branch} => {repository}:{base})")
+            print(f"Updated pull request #{pull_request.number} ({head_branch} => {github_repo.owner}:{base})")
         else:
             print(str(e))
             raise

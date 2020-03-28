@@ -56,7 +56,7 @@ With the exception of `token`, all inputs are **optional**. If not set, sensible
 | `project` | The name of the project for which a card should be created. Requires `project-column`. | |
 | `project-column` | The name of the project column under which a card should be created. Requires `project`. | |
 | `branch` | The branch name. See [Branch naming](#branch-naming) for details. | `create-pull-request/patch` |
-| `repository` | The name of the repository. | Defaults to git remote origin |
+| `request-to-parent` | Whether or not the pull request should be create on the forked repository's parent. | `false` |
 | `base` | Sets the pull request base branch. | Defaults to the branch checked out in the workflow. |
 | `branch-suffix` | The branch suffix type. Valid values are `random`, `timestamp` and `short-commit-hash`. See [Branch naming](#branch-naming) for details. | |
 
@@ -187,7 +187,7 @@ jobs:
           project: Example Project
           project-column: To do
           branch: example-patches
-          repository: my-company/project
+          request-to-parent: false
       - name: Check outputs
         run: |
           echo "Pull Request Number - ${{ env.PULL_REQUEST_NUMBER }}"
